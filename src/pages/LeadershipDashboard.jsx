@@ -99,7 +99,7 @@ export default function LeadershipDashboard() {
   const { data: remakeRate = [] } = useQuery({
     queryKey: ['remake_rate', bounds.fromStr],
     queryFn: async () => {
-      const { data, error } = await supabase.from('v_remake_rate_daily_by_bu').select('report_date, shipped_case_count, remake_case_count, remake_rate_pct').eq('business_unit_l1', 'Crown & Bridge').gte('report_date', bounds.fromStr).order('report_date', { ascending: true });
+      const { data, error } = await supabase.from('v_remake_rate_daily_by_bu').select('report_date, shipped_case_count, remake_case_count, remake_rate_pct').eq('business_unit_l1', 'Restorative').gte('report_date', bounds.fromStr).order('report_date', { ascending: true });
       if (error) throw error;
       return data ?? [];
     },
@@ -108,7 +108,7 @@ export default function LeadershipDashboard() {
   const { data: externalCases = [] } = useQuery({
     queryKey: ['external_cases', bounds.fromStr],
     queryFn: async () => {
-      const { data, error } = await supabase.from('cases_remake').select('case_number, remake_fault, remake_reason, received_date, primary_product').eq('business_unit', 'Crown & Bridge').gte('received_date', bounds.fromStr).order('received_date', { ascending: false });
+      const { data, error } = await supabase.from('cb_dept_remakes').select('"Case Number","Invoice Date","Remake Fault","Business Unit"').gte('"Invoice Date"', bounds.fromStr).order('"Invoice Date"', { ascending: false });
       if (error) throw error;
       return data ?? [];
     },
@@ -117,7 +117,7 @@ export default function LeadershipDashboard() {
   const { data: internalRaw = [] } = useQuery({
     queryKey: ['internal_mrb', bounds.fromStr],
     queryFn: async () => {
-      const { data, error } = await supabase.from('mrb_cb').select('case_number, step_date, dept_name, remake_description, tech_name, step_consolidated').in('business_unit', ['Crown & Bridge - Design Dept (Schedule)', 'Crown & Bridge - Production (Schedule)', 'Shared Services - Crown & Bridge 1', 'Shared Services - Crown & Bridge 3']).gte('step_date', bounds.fromStr + 'T00:00:00Z').order('step_date', { ascending: false });
+      const { data, error } = await supabase.from('mrb_cb').select('case_number, step_date, dept_name, remake_description, tech_name, step_consolidated').in('business_unit', ['Crown & Bridge - MiYo/Porcelain', 'Crown & Bridge - Stain & Glaze', 'Data Capture - Crown & Bridge 1', 'Quality Control C&B (Schedule)', 'Shared Services - Crown & Bridge 1', 'Shared Services - Crown & Bridge 2', 'Shared Services - Crown & Bridge 3', 'Shared Services - Crown & Bridge 4', 'Shared Services - Crown & Bridge 5', 'Technical Advisory C&B (Schedule)']).gte('step_date', bounds.fromStr + 'T00:00:00Z').order('step_date', { ascending: false });
       if (error) throw error;
       return data ?? [];
     },
@@ -126,7 +126,7 @@ export default function LeadershipDashboard() {
   const { data: otdData = [] } = useQuery({
     queryKey: ['otd', bounds.fromStr],
     queryFn: async () => {
-      const { data, error } = await supabase.from('v_otd_daily_by_bu').select('report_date, shipped_case_count, on_time_case_count, otd_pct').eq('business_unit_l1', 'Crown & Bridge').gte('report_date', bounds.fromStr).order('report_date', { ascending: true });
+      const { data, error } = await supabase.from('v_otd_daily_by_bu').select('report_date, shipped_case_count, on_time_case_count, otd_pct').eq('business_unit_l1', 'Restorative').gte('report_date', bounds.fromStr).order('report_date', { ascending: true });
       if (error) throw error;
       return data ?? [];
     },
@@ -159,7 +159,7 @@ export default function LeadershipDashboard() {
       
       // Filter BU in JS
       const validSet = new Set(
-        (cases || []).filter(c => c['Business Unit'] === 'Crown & Bridge').map(c => c['Case Number'])
+        (cases || []).filter(c => c['Business Unit'] === 'Restorative').map(c => c['Case Number'])
       );
       return dated.filter(n => validSet.has(n['Case Number']));
     },
@@ -187,18 +187,14 @@ export default function LeadershipDashboard() {
   const totalShipped = remakeRate.reduce((s, r) => s + parseInt(r.shipped_case_count || 0), 0);
   const totalExtRemakes = remakeRate.reduce((s, r) => s + parseInt(r.remake_case_count || 0), 0);
   const avgRemakeRate = totalShipped > 0 ? (totalExtRemakes / totalShipped * 100) : 0;
-  const labFaultCount = externalCases.filter(c => c.remake_fault === 'Lab Fault').length;
-  const noReasonCount = externalCases.filter(c => !c.remake_reason?.trim()).length;
+  const labFaultCount = externalCases.filter(c => c['Remake Fault'] === 'Lab Fault').length;
+  const noReasonCount = 0; // cb_dept_remakes has no reason field
 
-  const extReasonCounts = externalCases.reduce((acc, c) => {
-    const r = cleanReason(c.remake_reason);
-    if (r !== 'No reason entered') acc[r] = (acc[r] || 0) + 1;
-    return acc;
-  }, {});
-  const extReasons = Object.entries(extReasonCounts).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([reason, count]) => ({ reason, count }));
+  const extReasonCounts = {};
+  const extReasons = [];
 
   const extFaultCounts = externalCases.reduce((acc, c) => {
-    acc[c.remake_fault || 'Unknown'] = (acc[c.remake_fault || 'Unknown'] || 0) + 1;
+    acc[c['Remake Fault'] || 'Unknown'] = (acc[c['Remake Fault'] || 'Unknown'] || 0) + 1;
     return acc;
   }, {});
 
