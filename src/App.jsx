@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import Layout from './components/Layout';
 import Remakes from './pages/InternalRemakes';
 import QCLogPage from './pages/QCLogPage';
+import LogInternalRemake from './pages/LogInternalRemake';
 import MRBBoard from './pages/MRBBoard';
 import LeadershipDashboard from './pages/LeadershipDashboard';
 import QCControlDashboard from './pages/QCControlDashboard';
@@ -16,12 +17,13 @@ export default function App() {
       <Router>
         <Routes>
           <Route element={<Layout />}>
-            <Route path="/"           element={<LeadershipDashboard />} />
-            <Route path="/remakes"    element={<Remakes />} />
-            <Route path="/qc-control" element={<QCControlDashboard />} />
-            <Route path="/log-reject" element={<QCLogPage />} />
-            <Route path="/mrb"        element={<MRBBoard />} />
-            <Route path="/complaints" element={<CustomerComplaints />} />
+            <Route path="/"                element={<LeadershipDashboard />} />
+            <Route path="/remakes"         element={<Remakes />} />
+            <Route path="/qc-control"      element={<QCControlDashboard />} />
+            <Route path="/log-reject"      element={<QCLogPage />} />
+            <Route path="/log-internal"    element={<LogInternalRemake />} />
+            <Route path="/mrb"             element={<MRBBoard />} />
+            <Route path="/complaints"      element={<CustomerComplaints />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
