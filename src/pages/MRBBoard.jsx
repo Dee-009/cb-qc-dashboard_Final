@@ -152,7 +152,7 @@ function StageModal({ caseNumber, onClose, onSaved }) {
   const handleSave = async () => {
     setSaving(true); setError(null);
     try {
-      const { error: dbErr } = await supabase.from('staged_cases').insert([{
+      const { error: dbErr } = await supabase.from('cb_staged_cases').insert([{
         case_number: caseNumber, dr_due_date: form.dr_due_date||null, department: form.department||null,
         assigned_expert: null, assigned_expert_email: null, status: 'Pending',
         staged_at: new Date().toISOString(), updated_at: new Date().toISOString(),
@@ -674,7 +674,7 @@ function StagedRow({ row, onClaimed }) {
         opened_date: format(new Date(),'yyyy-MM-dd'), created_date: new Date().toISOString(), updated_date: new Date().toISOString(),
       }]);
       if (mrbErr) throw mrbErr;
-      await supabase.from('staged_cases').update({ status:'Closed', assigned_expert: expert, reviewed_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq('id', row.id);
+      await supabase.from('cb_staged_cases').update({ status:'Closed', assigned_expert: expert, reviewed_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq('id', row.id);
       onClaimed();
     } catch(e) { alert('Error claiming case: '+e.message); } finally { setClaiming(false); }
   };
@@ -728,7 +728,7 @@ export default function MRBBoard() {
   const { data: stagedCases = [] } = useQuery({
     queryKey: ['staged_cases'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('staged_cases').select('*').neq('status','Closed').order('dr_due_date',{ascending:true,nullsFirst:false});
+      const { data, error } = await supabase.from('cb_staged_cases').select('*').neq('status','Closed').order('dr_due_date',{ascending:true,nullsFirst:false});
       if (error) throw error;
       return data??[];
     },
