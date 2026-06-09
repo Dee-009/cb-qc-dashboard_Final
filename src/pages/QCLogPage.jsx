@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { CheckCircle, AlertCircle, RotateCcw, UserCheck, Bell, SkipForward, Layers, ClipboardList } from 'lucide-react';
 
@@ -308,29 +307,17 @@ function InternalRemakeForm() {
 
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function QCLogPage() {
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('qc');
+
   return (
     <div style={{ minHeight:'100dvh', background:'#fafafa', fontFamily:'system-ui, sans-serif', display:'flex', flexDirection:'column' }}>
       <div style={{ background:'#fff', borderBottom:'1px solid #eee', padding:'14px 20px' }}>
         <div style={{ maxWidth:520, margin:'0 auto' }}>
-          <h1 style={{ margin:'0 0 12px', fontSize:18, fontWeight:700, color:'#111' }}>Log Entry — Crown &amp; Bridge</h1>
-          <div style={{ display:'flex', gap:0, background:'#f5f5f5', borderRadius:12, padding:4 }}>
-            {[
-              { key:'qc', label:'QC Reject',      icon:'🔍', sub:'ASAP · Repair · Remake', nav: null },
-              { key:'ir', label:'Internal Remake', icon:'🔄', sub:'Department leads',       nav: '/log-internal' },
-            ].map((tab) => (
-              <button key={tab.key} onClick={() => tab.nav ? navigate(tab.nav) : setActiveTab(tab.key)} style={{ flex:1, background: activeTab === tab.key ? '#fff' : 'transparent', border:'none', borderRadius:10, padding:'10px 12px', cursor:'pointer', transition:'all 0.15s', boxShadow: activeTab === tab.key ? '0 1px 4px rgba(0,0,0,0.1)' : 'none' }}>
-                <p style={{ margin:'0 0 2px', fontSize:14, fontWeight: activeTab === tab.key ? 700 : 500, color: activeTab === tab.key ? '#111' : '#888' }}>{tab.icon} {tab.label}</p>
-                <p style={{ margin:0, fontSize:11, color: activeTab === tab.key ? '#555' : '#aaa' }}>{tab.sub}</p>
-              </button>
-            ))}
-          </div>
+          <h1 style={{ margin:0, fontSize:18, fontWeight:700, color:'#111' }}>Log QC Reject</h1>
+          <p style={{ margin:'2px 0 0', fontSize:13, color:'#888' }}>Crown &amp; Bridge · SKDLA</p>
         </div>
       </div>
       <div style={{ flex:1, padding:'20px 20px 0', maxWidth:520, margin:'0 auto', width:'100%', boxSizing:'border-box', display:'flex', flexDirection:'column' }}>
-        {activeTab === 'qc' && <QCRejectForm />}
-        {activeTab === 'ir' && <InternalRemakeForm />}
+        <QCRejectForm />
       </div>
     </div>
   );
