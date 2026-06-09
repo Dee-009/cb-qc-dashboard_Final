@@ -79,7 +79,7 @@ export function InternalRemakeDashboard() {
     queryKey: ['internal_remake_log', dateRange],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('internal_remake_log')
+        .from('cb_internal_remake_log')
         .select('*')
         .gte('time_stamp', dateFrom + 'T00:00:00Z')
         .order('time_stamp', { ascending: false });

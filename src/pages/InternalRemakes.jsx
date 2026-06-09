@@ -11,7 +11,22 @@ import { Search, Download, RotateCcw, TrendingUp, AlertTriangle, Building2, Wren
 import { format, parseISO, subDays } from 'date-fns';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, LineChart, Line } from 'recharts';
 
-// CB internal business units in mrb_cb
+// CB-only business units for EXTERNAL remakes filter
+const CB_EXTERNAL_BUS = [
+  'Crown & Bridge - Stain & Glaze',
+  'Crown & Bridge - MiYo/Porcelain',
+  'Data Capture - Crown & Bridge 1',
+  'Quality Control C&B (Schedule)',
+  'Shared Services - Crown & Bridge 1',
+  'Shared Services - Crown & Bridge 2',
+  'Shared Services - Crown & Bridge 3',
+  'Shared Services - Crown & Bridge 4',
+  'Shared Services - Crown & Bridge 5',
+  'Technical Advisory C&B (Schedule)',
+  'Ceramics Finish (Schedule)',
+];
+
+// CB business units for INTERNAL remakes (mrb_cb)
 const CB_BUSINESS_UNITS = [
   'Crown & Bridge - MiYo/Porcelain',
   'Crown & Bridge - Stain & Glaze',
@@ -102,6 +117,7 @@ export default function Remakes() {
       const { data, error } = await supabase
         .from('cb_dept_remakes')
         .select('"Case Number","Invoice Date","Remake Fault","Business Unit","Abs Order Id"')
+        .in('"Business Unit"', CB_EXTERNAL_BUS)
         .gte('"Invoice Date"', dateFrom)
         .order('"Invoice Date"', { ascending: false });
       if (error) throw error;
