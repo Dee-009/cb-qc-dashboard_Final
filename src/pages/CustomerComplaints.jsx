@@ -115,40 +115,53 @@ export default function CustomerComplaints() {
 
   const dateFrom = format(subDays(new Date(), parseInt(dateRange)), 'yyyy-MM-dd');
 
-  // Fetch complaints — join Case Notes with Cases server-side via two queries + merge
+  // Fetch complaints — get all notes first, then filter by Restorative BU
   const { data: complaints = [], isLoading } = useQuery({
     queryKey: ['cb_complaints', dateRange],
     queryFn: async () => {
-      // Step 1: get all Restorative case numbers
-      const { data: cases } = await supabase
-        .from('Cases')
-        .select('"Case Number", "Primary Product", "Doctor Due Date"')
-        .eq('Business Unit', CB_BUSINESS_UNIT);
-      const caseMap = {};
-      (cases || []).forEach(c => { caseMap[c['Case Number']] = c; });
-      const caseNums = Object.keys(caseMap);
-      if (!caseNums.length) return [];
-
-      // Step 2: fetch complaint notes for those cases in date range
+      // Fetch complaint notes in date range (no BU filter yet)
       const { data: notes, error } = await supabase
         .from('Case Notes')
         .select('"Case Number", "Note User Full Name", "Subject", "Note Text", "Created Date"')
         .ilike('Subject', '%complaint%')
         .gte('Created Date', dateFrom)
-        .in('Case Number', caseNums)
-        .order('Created Date', { ascending: false });
+        .order('Created Date', { ascending: false })
+        .limit(2000);
       if (error) throw error;
+      if (!notes?.length) return [];
 
-      return (notes ?? []).map(r => ({
-        case_number:  r['Case Number'],
-        logged_by:    r['Note User Full Name'],
-        subject:      r['Subject'],
-        note_text:    r['Note Text'],
-        created_date: r['Created Date'],
-        product:      caseMap[r['Case Number']]?.['Primary Product'] || null,
-        doctor_due:   caseMap[r['Case Number']]?.['Doctor Due Date'] || null,
-        category:     classifyComplaint(r['Subject'], r['Note Text']),
-      }));
+      // Get unique case numbers from notes
+      const caseNums = [...new Set(notes.map(n => n['Case Number']))];
+
+      // Fetch case metadata in batches of 500
+      const batchSize = 500;
+      const allCases = [];
+      for (let i = 0; i < caseNums.length; i += batchSize) {
+        const batch = caseNums.slice(i, i + batchSize);
+        const { data: batchData } = await supabase
+          .from('Cases')
+          .select('"Case Number", "Business Unit", "Primary Product", "Doctor Due Date"')
+          .in('Case Number', batch)
+          .eq('Business Unit', CB_BUSINESS_UNIT);
+        if (batchData) allCases.push(...batchData);
+      }
+
+      const caseMap = {};
+      allCases.forEach(c => { caseMap[c['Case Number']] = c; });
+
+      // Filter to CB only and enrich
+      return notes
+        .filter(r => caseMap[r['Case Number']])
+        .map(r => ({
+          case_number:  r['Case Number'],
+          logged_by:    r['Note User Full Name'],
+          subject:      r['Subject'],
+          note_text:    r['Note Text'],
+          created_date: r['Created Date'],
+          product:      caseMap[r['Case Number']]?.['Primary Product'] || null,
+          doctor_due:   caseMap[r['Case Number']]?.['Doctor Due Date'] || null,
+          category:     classifyComplaint(r['Subject'], r['Note Text']),
+        }));
     },
   });
 
