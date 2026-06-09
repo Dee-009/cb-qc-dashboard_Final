@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { CheckCircle, AlertCircle, RotateCcw, UserCheck, Bell, SkipForward, Layers, ClipboardList } from 'lucide-react';
 
@@ -307,6 +308,7 @@ function InternalRemakeForm() {
 
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function QCLogPage() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('qc');
   return (
     <div style={{ minHeight:'100dvh', background:'#fafafa', fontFamily:'system-ui, sans-serif', display:'flex', flexDirection:'column' }}>
@@ -316,13 +318,13 @@ export default function QCLogPage() {
           <div style={{ display:'flex', gap:0, background:'#f5f5f5', borderRadius:12, padding:4 }}>
             {[
               { key:'qc', label:'QC Reject',      icon:'🔍', sub:'ASAP · Repair · Remake' },
-              { key:'ir', label:'Internal Remake', icon:'🔄', sub:'Department leads' },
+              { key:'ir', label:'Internal Remake', icon:'🔄', sub:'Department leads', nav:'/log-internal' },
             ].map(({ key, label, icon, sub }) => (
-              <button key={key} onClick={() => setActiveTab(key)} style={{ flex:1, background: activeTab === key ? '#fff' : 'transparent', border:'none', borderRadius:10, padding:'10px 12px', cursor:'pointer', transition:'all 0.15s', boxShadow: activeTab === key ? '0 1px 4px rgba(0,0,0,0.1)' : 'none' }}>
+              <button key={key} onClick={() => { if (t.nav) navigate(t.nav); else setActiveTab(key); }} style={{ flex:1, background: activeTab === key ? '#fff' : 'transparent', border:'none', borderRadius:10, padding:'10px 12px', cursor:'pointer', transition:'all 0.15s', boxShadow: activeTab === key ? '0 1px 4px rgba(0,0,0,0.1)' : 'none' }}>
                 <p style={{ margin:'0 0 2px', fontSize:14, fontWeight: activeTab === key ? 700 : 500, color: activeTab === key ? '#111' : '#888' }}>{icon} {label}</p>
                 <p style={{ margin:0, fontSize:11, color: activeTab === key ? '#555' : '#aaa' }}>{sub}</p>
               </button>
-            ))}
+            ); })}
           </div>
         </div>
       </div>
