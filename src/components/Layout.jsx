@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
-import { LayoutDashboard, Menu, X, Activity, ShieldCheck, RotateCcw, ClipboardPen, FlaskConical, MessageCircleWarning, WrenchIcon } from 'lucide-react';
+import { LayoutDashboard, Menu, X, Activity, ShieldCheck, RotateCcw, WrenchIcon, FlaskConical, MessageCircleWarning } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { label: 'Dashboard',            description: 'Leadership & Overview',       icon: LayoutDashboard,      path: '/',            exact: true },
-  { label: 'Remakes',              description: 'External & Internal remakes', icon: RotateCcw,            path: '/remakes'                  },
-  { label: 'QC Control',           description: 'Supervisor Quality Control',  icon: ShieldCheck,          path: '/qc-control'               },
-  { label: 'Log QC Reject',        description: 'Submit a new QC entry',       icon: ClipboardPen,         path: '/log-reject'               },
-  { label: 'Log Internal Remake',  description: 'Department leads',            icon: WrenchIcon,           path: '/log-internal', sub: true  },
-  { label: 'MRB Board',            description: 'Material Review Board',       icon: FlaskConical,         path: '/mrb'                      },
-  { label: 'Complaints',           description: 'Customer complaints C&B',     icon: MessageCircleWarning, path: '/complaints'               },
+  { label: 'Dashboard',           description: 'Leadership & Overview',       icon: LayoutDashboard,      path: '/',           exact: true },
+  { label: 'Remakes',             description: 'External & Internal remakes', icon: RotateCcw,            path: '/remakes'                 },
+  { label: 'QC Control',          description: 'Supervisor Quality Control',  icon: ShieldCheck,          path: '/qc-control'              },
+  { label: 'Log Internal Remake', description: 'Department leads',            icon: WrenchIcon,           path: '/log-internal'            },
+  { label: 'MRB Board',           description: 'Material Review Board',       icon: FlaskConical,         path: '/mrb'                     },
+  { label: 'Complaints',          description: 'Customer complaints C&B',     icon: MessageCircleWarning, path: '/complaints'              },
 ];
 
 export default function Layout() {
@@ -36,24 +35,23 @@ export default function Layout() {
         </div>
 
         <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-          {navItems.map(({ label, description, icon: Icon, path, exact, sub }) => (
+          {navItems.map(({ label, description, icon: Icon, path, exact }) => (
             <NavLink
               key={path}
               to={path}
               end={exact}
               onClick={() => setMobileOpen(false)}
               className={({ isActive }) => cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group",
-                sub && "ml-4 py-2",
+                "flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group",
                 isActive ? "bg-primary text-primary-foreground shadow-sm" : "hover:bg-muted text-foreground"
               )}
             >
               {({ isActive }) => (
                 <>
-                  <Icon className={cn(sub ? "w-3.5 h-3.5" : "w-4 h-4", "shrink-0", isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground")} />
+                  <Icon className={cn("w-4 h-4 shrink-0", isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground")} />
                   <div>
-                    <p className={cn("leading-tight font-semibold", sub ? "text-xs" : "text-sm")}>{label}</p>
-                    <p className={cn("leading-tight", sub ? "text-[9px]" : "text-[10px]", isActive ? "text-primary-foreground/70" : "text-muted-foreground")}>{description}</p>
+                    <p className="text-sm font-semibold leading-tight">{label}</p>
+                    <p className={cn("text-[10px] leading-tight", isActive ? "text-primary-foreground/70" : "text-muted-foreground")}>{description}</p>
                   </div>
                 </>
               )}
