@@ -101,7 +101,7 @@ export default function LogInternalRemake() {
           updated_at:            new Date().toISOString(),
         }]);
         EXPERTS.forEach(ex => {
-          fetch(`${SUPABASE_URL}/functions/v1/notify-expert-staged`, {
+          fetch(`${SUPABASE_URL}/functions/v1/notify-cb-expert-staged`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'apikey': ANON_KEY },
             body: JSON.stringify({
