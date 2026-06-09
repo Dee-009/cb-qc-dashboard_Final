@@ -317,14 +317,14 @@ export default function QCLogPage() {
           <h1 style={{ margin:'0 0 12px', fontSize:18, fontWeight:700, color:'#111' }}>Log Entry — Crown &amp; Bridge</h1>
           <div style={{ display:'flex', gap:0, background:'#f5f5f5', borderRadius:12, padding:4 }}>
             {[
-              { key:'qc', label:'QC Reject',      icon:'🔍', sub:'ASAP · Repair · Remake' },
-              { key:'ir', label:'Internal Remake', icon:'🔄', sub:'Department leads', nav:'/log-internal' },
-            ].map(({ key, label, icon, sub }) => (
-              <button key={key} onClick={() => { if (t.nav) navigate(t.nav); else setActiveTab(key); }} style={{ flex:1, background: activeTab === key ? '#fff' : 'transparent', border:'none', borderRadius:10, padding:'10px 12px', cursor:'pointer', transition:'all 0.15s', boxShadow: activeTab === key ? '0 1px 4px rgba(0,0,0,0.1)' : 'none' }}>
-                <p style={{ margin:'0 0 2px', fontSize:14, fontWeight: activeTab === key ? 700 : 500, color: activeTab === key ? '#111' : '#888' }}>{icon} {label}</p>
-                <p style={{ margin:0, fontSize:11, color: activeTab === key ? '#555' : '#aaa' }}>{sub}</p>
+              { key:'qc', label:'QC Reject',      icon:'🔍', sub:'ASAP · Repair · Remake', nav: null },
+              { key:'ir', label:'Internal Remake', icon:'🔄', sub:'Department leads',       nav: '/log-internal' },
+            ].map((tab) => (
+              <button key={tab.key} onClick={() => tab.nav ? navigate(tab.nav) : setActiveTab(tab.key)} style={{ flex:1, background: activeTab === tab.key ? '#fff' : 'transparent', border:'none', borderRadius:10, padding:'10px 12px', cursor:'pointer', transition:'all 0.15s', boxShadow: activeTab === tab.key ? '0 1px 4px rgba(0,0,0,0.1)' : 'none' }}>
+                <p style={{ margin:'0 0 2px', fontSize:14, fontWeight: activeTab === tab.key ? 700 : 500, color: activeTab === tab.key ? '#111' : '#888' }}>{tab.icon} {tab.label}</p>
+                <p style={{ margin:0, fontSize:11, color: activeTab === tab.key ? '#555' : '#aaa' }}>{tab.sub}</p>
               </button>
-            ); })}
+            ))}
           </div>
         </div>
       </div>
