@@ -115,50 +115,42 @@ export default function CustomerComplaints() {
 
   const dateFrom = format(subDays(new Date(), parseInt(dateRange)), 'yyyy-MM-dd');
 
-  // Fetch complaints from Case Notes
-  const { data: raw = [], isLoading } = useQuery({
+  // Fetch complaints — join Case Notes with Cases server-side via two queries + merge
+  const { data: complaints = [], isLoading } = useQuery({
     queryKey: ['cb_complaints', dateRange],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Step 1: get all Restorative case numbers
+      const { data: cases } = await supabase
+        .from('Cases')
+        .select('"Case Number", "Primary Product", "Doctor Due Date"')
+        .eq('Business Unit', CB_BUSINESS_UNIT);
+      const caseMap = {};
+      (cases || []).forEach(c => { caseMap[c['Case Number']] = c; });
+      const caseNums = Object.keys(caseMap);
+      if (!caseNums.length) return [];
+
+      // Step 2: fetch complaint notes for those cases in date range
+      const { data: notes, error } = await supabase
         .from('Case Notes')
         .select('"Case Number", "Note User Full Name", "Subject", "Note Text", "Created Date"')
         .ilike('Subject', '%complaint%')
         .gte('Created Date', dateFrom)
+        .in('Case Number', caseNums)
         .order('Created Date', { ascending: false });
       if (error) throw error;
-      return data ?? [];
+
+      return (notes ?? []).map(r => ({
+        case_number:  r['Case Number'],
+        logged_by:    r['Note User Full Name'],
+        subject:      r['Subject'],
+        note_text:    r['Note Text'],
+        created_date: r['Created Date'],
+        product:      caseMap[r['Case Number']]?.['Primary Product'] || null,
+        doctor_due:   caseMap[r['Case Number']]?.['Doctor Due Date'] || null,
+        category:     classifyComplaint(r['Subject'], r['Note Text']),
+      }));
     },
   });
-
-  // Fetch CB case metadata (Restorative = Crown & Bridge)
-  const { data: caseMeta = {} } = useQuery({
-    queryKey: ['cb_cases_meta_complaints'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('Cases')
-        .select('"Case Number", "Business Unit", "Primary Product", "Doctor Due Date"')
-        .eq('Business Unit', CB_BUSINESS_UNIT);
-      if (error) throw error;
-      const map = {};
-      (data || []).forEach(c => { map[c['Case Number']] = c; });
-      return map;
-    },
-  });
-
-  // Enrich and filter to CB (Restorative) only
-  const complaints = raw
-    .map(r => ({
-      case_number:  r['Case Number'],
-      logged_by:    r['Note User Full Name'],
-      subject:      r['Subject'],
-      note_text:    r['Note Text'],
-      created_date: r['Created Date'],
-      product:      caseMeta[r['Case Number']]?.['Primary Product'] || null,
-      doctor_due:   caseMeta[r['Case Number']]?.['Doctor Due Date'] || null,
-      bu:           caseMeta[r['Case Number']]?.['Business Unit'] || null,
-      category:     classifyComplaint(r['Subject'], r['Note Text']),
-    }))
-    .filter(c => c.bu === CB_BUSINESS_UNIT);
 
   // Stats
   const categoryCounts = complaints.reduce((acc, c) => {
