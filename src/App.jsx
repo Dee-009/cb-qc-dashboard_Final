@@ -8,6 +8,7 @@ import QCLogPage from './pages/QCLogPage';
 import MRBBoard from './pages/MRBBoard';
 import LeadershipDashboard from './pages/LeadershipDashboard';
 import QCControlDashboard from './pages/QCControlDashboard';
+import CustomerComplaints from './pages/CustomerComplaints';
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
             <Route path="/qc-control" element={<QCControlDashboard />} />
             <Route path="/log-reject" element={<QCLogPage />} />
             <Route path="/mrb"        element={<MRBBoard />} />
+            <Route path="/complaints" element={<CustomerComplaints />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

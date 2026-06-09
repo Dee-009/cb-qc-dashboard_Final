@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
-import { LayoutDashboard, Menu, X, Activity, ShieldCheck, RotateCcw, ClipboardPen, FlaskConical, LogOut } from 'lucide-react';
+import { LayoutDashboard, Menu, X, Activity, ShieldCheck, RotateCcw, ClipboardPen, FlaskConical, MessageCircleWarning } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { label: 'Dashboard',      description: 'Leadership & Overview',         icon: LayoutDashboard, path: '/'                  },
-  { label: 'Remakes',        description: 'External & Internal remakes',   icon: RotateCcw,       path: '/remakes'           },
-  { label: 'QC Control',     description: 'Supervisor Quality Control',    icon: ShieldCheck,     path: '/qc-control'        },
-  { label: 'Log QC Reject',  description: 'Submit a new QC entry',         icon: ClipboardPen,    path: '/log-reject'        },
-  { label: 'MRB Board',      description: 'Material Review Board',         icon: FlaskConical,    path: '/mrb'               },
+  { label: 'Dashboard',         description: 'Leadership & Overview',        icon: LayoutDashboard,       path: '/'           },
+  { label: 'Remakes',           description: 'External & Internal remakes',  icon: RotateCcw,             path: '/remakes'    },
+  { label: 'QC Control',        description: 'Supervisor Quality Control',   icon: ShieldCheck,           path: '/qc-control' },
+  { label: 'Log QC Reject',     description: 'Submit a new QC entry',        icon: ClipboardPen,          path: '/log-reject' },
+  { label: 'MRB Board',         description: 'Material Review Board',        icon: FlaskConical,          path: '/mrb'        },
+  { label: 'Complaints',        description: 'Customer complaints C&B',      icon: MessageCircleWarning,  path: '/complaints' },
 ];
 
 export default function Layout() {
@@ -16,13 +17,11 @@ export default function Layout() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
-      {/* Sidebar */}
       <aside className={cn(
         "fixed inset-y-0 left-0 z-50 w-64 bg-card border-r flex flex-col transition-transform duration-300",
         "lg:relative lg:translate-x-0",
         mobileOpen ? "translate-x-0" : "-translate-x-full"
       )}>
-        {/* Logo */}
         <div className="px-5 py-5 border-b">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
@@ -35,7 +34,6 @@ export default function Layout() {
           </div>
         </div>
 
-        {/* Nav */}
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
           {navItems.map(({ label, description, icon: Icon, path }) => (
             <NavLink
@@ -45,9 +43,7 @@ export default function Layout() {
               onClick={() => setMobileOpen(false)}
               className={({ isActive }) => cn(
                 "flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group",
-                isActive
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "hover:bg-muted text-foreground"
+                isActive ? "bg-primary text-primary-foreground shadow-sm" : "hover:bg-muted text-foreground"
               )}
             >
               {({ isActive }) => (
@@ -63,7 +59,6 @@ export default function Layout() {
           ))}
         </nav>
 
-        {/* Live feed */}
         <div className="px-5 py-3 border-t">
           <div className="flex items-center gap-1.5 text-xs text-emerald-600">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse inline-block" />
@@ -73,23 +68,16 @@ export default function Layout() {
         </div>
       </aside>
 
-      {/* Mobile overlay */}
-      {mobileOpen && (
-        <div className="fixed inset-0 z-40 bg-black/30 lg:hidden" onClick={() => setMobileOpen(false)} />
-      )}
+      {mobileOpen && <div className="fixed inset-0 z-40 bg-black/30 lg:hidden" onClick={() => setMobileOpen(false)} />}
 
-      {/* Main */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Mobile topbar */}
         <div className="lg:hidden flex items-center gap-3 px-4 py-3 border-b bg-card">
           <button onClick={() => setMobileOpen(!mobileOpen)} className="p-1.5 rounded-lg hover:bg-muted">
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
           <span className="font-semibold text-sm">CB QC Dashboard</span>
         </div>
-        <main className="flex-1 overflow-y-auto">
-          <Outlet />
-        </main>
+        <main className="flex-1 overflow-y-auto"><Outlet /></main>
       </div>
     </div>
   );
