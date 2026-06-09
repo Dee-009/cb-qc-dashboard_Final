@@ -12,8 +12,8 @@ const SUPABASE_URL = 'https://asdunkqodixbhbohxtuq.supabase.co';
 const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 const EXPERTS = [
-  { name: 'Jeannette Rubio', email: 'jeannette.rubio@skdla.com' },
-  { name: 'Ryan Okon',       email: 'ryan.okon@skdla.com' },
+  { name: 'Raj Pai',          email: 'raj.pai@skdla.com' },
+  { name: 'Deepak Polemoni',  email: 'deepak.polemoni@skdla.com' },
 ];
 
 const inp = { width:'100%', boxSizing:'border-box', border:'1.5px solid #e2e2e2', borderRadius:12, padding:'14px 16px', fontSize:15, background:'#fff', color:'#111', outline:'none', fontFamily:'inherit' };
@@ -149,7 +149,7 @@ export default function LogInternalRemake() {
                 <p style={{ margin:'0 0 8px', fontSize:15, fontWeight:600, color:'#333', lineHeight:1.6 }}>
                   Move the case to the <strong>Internal Remake — C&amp;B Staging Rack</strong>.
                 </p>
-                <p style={{ margin:0, fontSize:13, color:'#666' }}>Jeannette Rubio &amp; Ryan Okon have been notified by email.</p>
+                <p style={{ margin:0, fontSize:13, color:'#666' }}>Raj Pai &amp; Deepak Polemoni have been notified by email.</p>
               </>
             ) : (
               <>
@@ -251,18 +251,6 @@ export default function LogInternalRemake() {
               <label style={lbl}>Your Name</label>
               <input value={form.logged_by} onChange={e => set('logged_by', e.target.value)}
                 placeholder="Department lead name" style={inp} />
-            </div>
-          </div>
-
-          {/* Dates */}
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
-            <div>
-              <label style={lbl}>Ship Date</label>
-              <input type="date" value={form.ship_date} onChange={e => set('ship_date', e.target.value)} style={inp} />
-            </div>
-            <div>
-              <label style={lbl}>Doctor Due Date</label>
-              <input type="date" value={form.dr_due_date} onChange={e => set('dr_due_date', e.target.value)} style={inp} />
             </div>
           </div>
 
